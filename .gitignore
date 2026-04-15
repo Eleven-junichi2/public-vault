@@ -19,8 +19,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -177,12 +175,10 @@ pyrightconfig.json
 ### venv ###
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
-[Bb]in
-[Ii]nclude
-[Ll]ib
-[Ll]ib64
-[Ll]ocal
-[Ss]cripts
+.venv/
+venv/
+env/
+ENV/
 pyvenv.cfg
 pip-selfcheck.json
 
@@ -210,7 +206,6 @@ pip-selfcheck.json
 # Custom rules (everything added below won't be overriden by 'Generate .gitignore File' if you use 'Update' option)
 
 .DS_Store
-.gitignore
 node_modules
 public
 prof
