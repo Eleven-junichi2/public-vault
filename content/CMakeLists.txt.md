@@ -17,6 +17,7 @@ tags:
 - [[target_include_directoriesコマンド]]
 - [[find_packageコマンド]]
 - [[target_compile_featuresコマンド]]
+- [[target_sourcesコマンド]]
 
 ## 関連
 

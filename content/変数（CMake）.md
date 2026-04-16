@@ -3,6 +3,7 @@ publish: true
 tags:
   - CMake
 ---
+[[CMake]]では[[変数]]を扱うことができる。
 
 ## 参考
 
