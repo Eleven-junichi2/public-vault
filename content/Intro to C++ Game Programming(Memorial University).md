@@ -41,3 +41,14 @@ tags:
 - Lecture 22: [Intro to C++ Game Engine Scripting with Lua](https://www.youtube.com/watch?v=8MOF3dPPh8g&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
 
 ## Record
+
+- [x] Lecture 01: [Course Introduction + Syllabus](https://www.youtube.com/watch?v=tOHqMDlG9S0&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [x] Lecture 02: [Assignment 1 + Programming Environment Setup](https://www.youtube.com/watch?v=3WWjsTPdlag&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [x] Lecture 03: [Makefiles / ImGui / SFML](https://www.youtube.com/watch?v=bEaNm9YSXn0&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [x] Lecture 04: [Intro to ECS in C++ (Entities, Components, Systems)](https://www.youtube.com/watch?v=8_DeUkjQcSU&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [ ] Lecture 05: [Entity Manager + 2D Game Math](https://www.youtube.com/watch?v=1B3p2DOkso4&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [ ] Lecture 06: [Assignment 2](https://www.youtube.com/watch?v=DcMiPoNOmHg&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [ ] Lecture 07: [AABB Collision Detection + Resolution](https://www.youtube.com/watch?v=9QgaLWBkv0s&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [ ] Lecture 08: [Sprites, Textures, and Animations](https://www.youtube.com/watch?v=L_LivvW-8nk&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [ ] Lecture 09: [Inputs, Actions, and Replays](https://www.youtube.com/watch?v=lc7xGct2BYY&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)
+- [ ] Lecture 10: [Assignment 3](https://www.youtube.com/watch?v=eq8nvzVosIY&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv)

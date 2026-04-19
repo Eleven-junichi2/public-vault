@@ -5,9 +5,9 @@ publish: true
 ---
 Entity Component System。ゲーム開発で用いられる、ソフトウェア設計のパラダイムであり、[[コンポジション]]に基づいて設計をする。
 
-**Entity**は、ゲーム内のあらゆるオブジェクトを、Componentの組み合わせで一意に表現する単位である。1つのEntityは、同じ種類のComponentを複数持たない。
-**Component**は、基本的には処理を持たない、Entityに付随する**純粋なデータ**である。
-**System**は、振る舞いを定義する。
+エンティティ（**Entity**）は、ゲーム内のあらゆるオブジェクトを、Componentの組み合わせで一意に表現する単位である。1つのEntityは、同じ種類のComponentを複数持たない。
+コンポーネント（**Component**）は、基本的には処理を持たない、Entityに付随する**純粋なデータ**である。
+システム（**System**）は、EntityとそのComponentから振る舞いを定義する。
 
 > 例: Player entityは、ComponentとしてPos, Speed, BBox, Sprite, Health, Gravity, Inputを持つ。Tile entityは、Pos, BBox, Spriteを持つ。Movement Systemは全てのentityを走査し、各エンティティの座標を表すPos componentの値にSpeed componentの値を加える。
 
@@ -137,7 +137,7 @@ if (e.has<Transform>())
 - **利点**
     - コンパイル時に型が確定するため、アクセスが非常に高速（定数時間）。
     - 抽象化されており、`get<T>()` や `has<T>()` といったクリーンなAPIを提供できる。 
-    - 異なる型を一つのコレクションとしてスタックに近い形で管理でき、メモリ効率も比較的良い。
+    - 異なる型のComponentを1つのEntity内にまとめて保持できるため、個別にヒープ確保する場合に比べて、メモリ効率や局所性の面で有利になりやすい。
 - **欠点**
     - タプルに含めるすべてのコンポーネント型を事前に定義しておく必要がある
     - C++では実装にテンプレートメタプログラミングの知識が多少必要。 
@@ -170,40 +170,22 @@ class Entity
     std::string m_tag {"default"};
     size_t m_id {0};
 public:
-    Entity() {}
-    
+    Entity() = default;
+
     template <typename T, typename... TArgs>
-    T& add<T>(TArgs&&... mArgs)
-    {
-        auto& component = get<T>();
-        component = T(std::forward<TArgs>(mArgs)...);
-        component.exists = true; // ComponentがEntityに保持されることを設定する
-        return component;
-    }
+    T& add(TArgs&&... args);
 
     template <typename T>
-    T& get<T>
-    {
-        return std::get<T>(m_components);
-    }
+    T& get();
 
     template <typename T>
-    const T& get<T> const
-    {
-        return std::get<T>(m_components);
-    }
-    
-    template<typename T>
-    bool has() const
-    {
-        return get<T>().exists;
-    }
+    const T& get() const;
 
-    template<typename T>
-    void remove()
-    {
-        get<T> = T();
-    }
+    template <typename T>
+    bool has() const;
+
+    template <typename T>
+    void remove();
 
     size_t id() const;
     bool isAlive() const;
@@ -237,12 +219,12 @@ public:
 };
 ```
 
-## システムの実装パターン
+## Systemの実装パターン
 
 - 各エンティティを操作する
 - システムの対象を特定のコンポーネント（の組み合わせ）を持つエンティティのみに指定して実装できる。
 
-C++での例
+C++での例:
 ```cpp
 void sRender()
 {
@@ -250,12 +232,106 @@ void sRender()
     {
         if (e.has<CShape>() && e.has<CTransform>())
         {
-            e.cShape.shape.setPosition(e.CTransform.pos);
-            window.draw(e.cShape.shape);
+            auto& shape = e.get<CShape>();
+            auto& transform = e.get<CTransform>(); // transformのposの型はメンバxとメンバyを持つとする
+
+            shape.shape.setPosition(transform.pos.x, transform.pos.y);
+            window.draw(shape.shape);
         }
     }
 }
 ```
+
+## Entity Managerの実装パターン
+
+- [[Factoryデザインパターン]]を採用し、Entityを扱う。
+	- 全てのEntityの作成
+	- 全てのEntityの格納
+	- 全てのEntityの生存（期間）管理
+	- Entity Managerを介することで、[[イテレータの無効化]]のような問題をエンティティの利用者から切り離しやすくなる
+
+### Entityの格納方法の実装パターン
+
+1. エンティティを直接配列に格納する
+	- 利点:
+		- [[スマートポインタ]]の[[オーバーヘッド]]を避けられる
+		- メモリに連続的に配置されるため、キャッシュ効率が良い
+		- 設計がシンプルになる
+	- 欠点:
+		- 格納するエンティティの所有権や参照、生存期間がそれらを格納するコンテナに縛られる
+		- エンティティの削除は遅い
+		- [[イテレータの無効化]]の問題が発生する
+
+2. エンティティのスマートポインタを配列に格納する
+	- 利点:
+		- 所有権の共有により、安全に複数のシステムで生存期間の心配をせずにエンティティを複数のシステムで参照できる
+		- 自動メモリ管理
+		- エンティティの追加と削除が比較的早い（データ量が比較的少ない）
+		- 他の場所でエンティティを参照し続けながら、そのエンティティを格納する
+		- 配列を修正できる
+	- 欠点:
+		- [[スマートポインタ]]の[[オーバーヘッド]]
+		- エンティティがメモリへ連続的に配置されない
+3. エンティティを整数インデックスで管理するメモリプールでエンティティのデータを格納する
+
+- 全てのエンティティを保持する[[配列]]と、タグごとに配列を分類する[[連想配列]]を併用することで、特定の種類のエンティティだけを高速に取得することができる
+
+### C++での例
+
+```cpp
+using EntityVec = std::vector<std::shared_ptr<Entity>>;
+using EntityMap = std::map<std::string, EntityVec>;
+
+class EntityManager
+{
+    EntityVec m_entities;
+    EntityVec m_toAdd; // 追加したいエンティティを保持するバッファ
+    EntityMap m_entityMap;
+    size_t m_totalEntitites = 0; // 作成されたEntityの総数
+public:
+	EntityManager();
+	void update();
+	std::shared_ptr<Entity> addEntity(const std::string& tag);
+	EntityVec& getEntites()
+	EntityVec& getEntites(const std::string& tag)
+}
+```
+
+#### イテレーターの無効化への対策
+
+[[イテレータの無効化#対策|遅延効果]]による対策を実装するために、追加・削除したいエンティティを保持する[[バッファ]]としての配列を用意する。
+
+```cpp
+std::shared_ptr<Entity> EntityManager::addEntity(tag)
+{
+    auto e = std::make_shared<Entity>(tag, m_totalEntities++);
+    m_toAdd.push_back(e);
+    return e;
+}
+```
+
+`update()`メンバ関数によって、次のフレームで実際にバッファから反映される実装:
+```cpp
+void EntityManager::update()
+{
+	for (auto e : m_toAdd)
+	{
+	   m_entities.push_back(e);  
+	   m_entityMap[e->tag()].push_back(e);
+	}
+	for (auto e : m_entities)
+	{
+		// if e is dead, remove it from m_entities
+		// if e is dead, remove it from m_entityMap[e->tag()]
+		// AIへ ここでのイテレータの無効化を解決するように、このコードブロック全体を修正してください
+	}
+	m_toAdd.clear()
+}
+```
+
+## 関連
+
+- [[スマートポインタ]]
 
 ## 参考
 
