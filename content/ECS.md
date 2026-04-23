@@ -287,45 +287,70 @@ class EntityManager
     EntityVec m_entities;
     EntityVec m_toAdd; // 追加したいエンティティを保持するバッファ
     EntityMap m_entityMap;
-    size_t m_totalEntitites = 0; // 作成されたEntityの総数
+    size_t m_totalEntities = 0; // 作成されたEntityの総数
 public:
-	EntityManager();
-	void update();
-	std::shared_ptr<Entity> addEntity(const std::string& tag);
-	EntityVec& getEntites()
-	EntityVec& getEntites(const std::string& tag)
-}
+    EntityManager();
+    void update();
+    std::shared_ptr<Entity> addEntity(const std::string& tag);
+    EntityVec& getEntities();
+    EntityVec& getEntities(const std::string& tag);
+};
 ```
 
 #### イテレーターの無効化への対策
 
-[[イテレータの無効化#対策|遅延効果]]による対策を実装するために、追加・削除したいエンティティを保持する[[バッファ]]としての配列を用意する。
+[[イテレータの無効化#対策|遅延追加・遅延削除]]による対策を実装する。
+
+##### 遅延エンティティ追加の実装
+
+エンティティを直接追加するのではなく、追加したいエンティティを保持する[[バッファ]]として用意した配列へ追加し、安全なタイミングでそのバッファから取り出して、エンティティを追加する。
 
 ```cpp
-std::shared_ptr<Entity> EntityManager::addEntity(tag)
+std::shared_ptr<Entity> EntityManager::addEntity(const std::string& tag)
 {
     auto e = std::make_shared<Entity>(tag, m_totalEntities++);
     m_toAdd.push_back(e);
     return e;
 }
 ```
+- この`addEntity()`の実装はEntityをその場で`m_entities`に追加するのではなく、まず`m_toAdd`に積む。 これにより、システムが `m_entities` を走査している最中にコンテナ構造を変更せずに済む。
 
-`update()`メンバ関数によって、次のフレームで実際にバッファから反映される実装:
 ```cpp
 void EntityManager::update()
 {
-	for (auto e : m_toAdd)
-	{
-	   m_entities.push_back(e);  
-	   m_entityMap[e->tag()].push_back(e);
-	}
-	for (auto e : m_entities)
-	{
-		// if e is dead, remove it from m_entities
-		// if e is dead, remove it from m_entityMap[e->tag()]
-		// AIへ ここでのイテレータの無効化を解決するように、このコードブロック全体を修正してください
-	}
-	m_toAdd.clear()
+    for (auto& e : m_toAdd)
+    {
+        m_entities.push_back(e);
+        m_entityMap[e->tag()].push_back(e);
+    }
+    m_toAdd.clear();
+
+	// 以下、後述する削除処理の記載を省略
+}
+```
+- 実際の追加は`update()`で後でまとめて行う
+
+##### 遅延エンティティ削除の実装
+
+[[Erase-removeイディオム（C++）]]を利用して実装できる。
+
+```cpp
+void EntityManager::update()
+{
+	// 前述の追加処理部（省略）
+	
+	m_entities.erase(
+        std::remove_if(m_entities.begin(), m_entities.end(),
+            [](const auto& e) { return !e->isAlive(); }),
+        m_entities.end());
+
+    for (auto& [tag, entities] : m_entityMap)
+    {
+        entities.erase(
+            std::remove_if(entities.begin(), entities.end(),
+                [](const auto& e) { return !e->isAlive(); }),
+            entities.end());
+    }
 }
 ```
 
@@ -336,3 +361,4 @@ void EntityManager::update()
 ## 参考
 
 - [COMP4300 - Game Programming - Lecture 04 - Intro to ECS in C++ (Entities, Components, Systems)](https://www.youtube.com/watch?v=8_DeUkjQcSU)
+- [COMP4300 - Game Programming - Lecture 05 - Entity Manager + 2D Game Math](https://www.youtube.com/watch?v=1B3p2DOkso4&list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv&index=18)
