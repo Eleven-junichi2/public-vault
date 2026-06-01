@@ -1,12 +1,14 @@
 ---
-publish: true
 categories:
   - LiteratureNote
 title: CMake Tutorial
 source:
   - https://cmake.org/cmake/help/latest/guide/tutorial/index.html
 author:
+shelf:
 tags:
+ISBN:
+publish: true
 ---
 
 ## 目次

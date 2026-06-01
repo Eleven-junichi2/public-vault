@@ -4,12 +4,12 @@ tags:
   - CPlusPlus
 ---
 C++の開発環境を構築するには、まず[[コンパイラ]]を用意する。  
-必要に応じて[[2_Archives/CMake]]などのビルドツールや、[[Visual Studio Code]]などのエディタを導入する。
+必要に応じて[[1_Archives/CMake]]などのビルドツールや、[[Visual Studio Code]]などのエディタを導入する。
 
 ## macOS
 
 - Xcode Command Line Tools または Xcode を導入すると、`clang++` が使える
-- 必要に応じて [[2_Archives/CMake]] を導入する
+- 必要に応じて [[1_Archives/CMake]] を導入する
 
 ## Windows
 

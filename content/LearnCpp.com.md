@@ -1,15 +1,17 @@
 ---
-publish: true
 categories:
   - LiteratureNote
 title: LearnCpp.com
 source:
   - https://www.learncpp.com/
 author:
+shelf:
 tags:
   - CPlusPlus
-roadmaps:
-  - "[[C++(Roadmap)]]"
+ISBN:
+publish: true
+mastery:
+  - "[[C++(Mastery)]]"
 ---
 ## Plan
 

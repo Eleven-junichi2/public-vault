@@ -1,5 +1,4 @@
 ---
-publish: true
 categories:
   - LiteratureNote
 title: "COMP 4300: Introduction to Game Programming"
@@ -8,8 +7,11 @@ source:
   - https://www.youtube.com/playlist?list=PL_xRyXins848Mfiv4hIgiMZgLpzFT7ohv
 author:
   - Dave Churchill
+shelf:
 tags:
   - GameDev
+ISBN:
+publish: true
 ---
 ## Plan
 

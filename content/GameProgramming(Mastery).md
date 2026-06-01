@@ -2,11 +2,8 @@
 publish: true
 tags:
   - GameDev
-categories: Roadmap
-target_daily_spend_time:
-break_time_recommendation:
+categories: Mastery
 ---
-
 ## Plan
 
 %%
@@ -20,12 +17,17 @@ break_time_recommendation:
 - [x] ゲームプログラミングでのベクトルの応用を学ぶ
 - [x] 衝突判定の基礎を学ぶ
 - [x] ゲームの状態・場面管理を学ぶ
-- [ ] アセットの扱いを学ぶ
+- [x] アセットの扱いを学ぶ
 - [ ] アニメーションを学ぶ
 - [ ] シェーダーを学ぶ
 
 以下の教材をメインとして学習する：
-- [[Intro to C++ Game Programming(Memorial University)]]
+- [ ] [[Intro to C++ Game Programming(Memorial University)]]
+
+
+### Schedule
+
+
 
 ## Roadmap
 
@@ -48,9 +50,9 @@ break_time_recommendation:
 - [[シーン]]
 - [[アセット管理]]
 
-## Related
+## Notes
 
-- [[C++(Roadmap)]]
+- 
 
 ## References
 
